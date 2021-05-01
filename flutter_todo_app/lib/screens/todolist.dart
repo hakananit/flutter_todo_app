@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_todo_app/model/todo.dart';
+import 'package:flutter_todo_app/screens/tododetail.dart';
 import 'package:flutter_todo_app/util/dbhelper.dart';
 
 class TodoList extends StatefulWidget {
@@ -23,7 +24,9 @@ class _TodoListState extends State<TodoList> {
     return Scaffold(
       body: todoListItems(),
       floatingActionButton: FloatingActionButton(
-        onPressed: null,
+        onPressed: () {
+          navigateToDetail(Todo('', 3, ''));
+        },
         tooltip: "add todo",
         child: Icon(Icons.add),
       ),
@@ -39,12 +42,30 @@ class _TodoListState extends State<TodoList> {
               elevation: .2,
               child: ListTile(
                   leading: CircleAvatar(
-                    child: Text(this.todos[position].id.toString()),
+                    backgroundColor: getColor(this.todos[position].priority),
+                    child: Text(this.todos[position].priority.toString()),
                   ),
                   title: Text(this.todos[position].title),
                   subtitle: Text(this.todos[position].date),
-                  onTap: () {}));
+                  onTap: () {
+                    navigateToDetail(this.todos[position]);
+                  }));
         });
+  }
+
+  Color getColor(int priority) {
+    switch (priority) {
+      case 1:
+        return Colors.green;
+        break;
+      case 2:
+        return Colors.purple;
+        break;
+      case 3:
+        return Colors.red;
+        break;
+      default:
+    }
   }
 
   void getData() {
@@ -63,5 +84,10 @@ class _TodoListState extends State<TodoList> {
         });
       });
     });
+  }
+
+  void navigateToDetail(Todo todo) async {
+    bool result = await Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => TodoDetail(todo)));
   }
 }
