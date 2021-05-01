@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_todo_app/model/todo.dart';
+import 'package:flutter_todo_app/util/dbhelper.dart';
+
+final List<String> choices = const <String>['save', 'delete', 'back'];
+
+DbHelper dbHelper = DbHelper();
 
 class TodoDetail extends StatefulWidget {
   final Todo todo;
@@ -26,6 +31,16 @@ class _TodoDetailState extends State<TodoDetail> {
     return Scaffold(
       appBar: AppBar(
         title: Text(todo.title),
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (itemBuilder) {
+              return choices
+                  .map((e) => PopupMenuItem(value: e, child: Text(e)))
+                  .toList();
+            },
+            onSelected: select,
+          )
+        ],
       ),
       body: ListView(
         children: [
@@ -68,5 +83,32 @@ class _TodoDetailState extends State<TodoDetail> {
         ],
       ),
     );
+  }
+
+  void select(String value) async {
+    int result;
+    switch (value) {
+      case 'delete':
+        Navigator.pop(context, true);
+        result = await dbHelper.deleteTodo(todo.id);
+        if (result != 0) {
+          AlertDialog dialog =
+              AlertDialog(title: Text("Delete"), content: Text("deleted."));
+          showDialog(context: context, builder: (_) => dialog);
+        }
+        break;
+      case 'save':
+        save();
+        break;
+      case 'back':
+        Navigator.pop(context, true);
+        break;
+      default:
+    }
+  }
+
+  void save() {
+    todo.date = DateTime.now().toString();
+    dbHelper.insertTodo(todo);
   }
 }
