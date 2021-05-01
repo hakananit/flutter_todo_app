@@ -36,7 +36,7 @@ class DbHelper {
 
   void _createDb(Database db, int newVersion) async {
     await db.execute(
-        "CREATE TABLE $tblTodo($colId INTEGER PRIMARY KEY, $colTitle TEXT, $colDescription TEXT, $colPriority TEXT, $colPriority INTEGER,$colDate TEXT");
+        'CREATE TABLE $tblTodo($colId INTEGER PRIMARY KEY, $colTitle TEXT, $colDescription TEXT, $colPriority TEXT, $colDate TEXT');
   }
 
   Future<int> insertTodo(Todo todo) async {
@@ -68,7 +68,7 @@ class DbHelper {
 
   Future<int> deleteTodo(int id) async {
     Database db = await this.db;
-    var result = await db.delete(tblTodo, where: "$colId", whereArgs: [id]);
+    var result = await db.delete(tblTodo, where: "$colId=?", whereArgs: [id]);
     return result;
   }
 }
